@@ -7,21 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/hello")
-public class HelloRestController {
-
+@RequestMapping("/api/articles")
+public class ArticleRestController {
+    @Autowired
+    private RepositoryArticleInMemory articleRepository;
 
     @GetMapping
-    public String sayHello() {
-        return "Hello from Spring MVC!";
+    public List<Article> getArticles() {
+        return articleRepository.findAll();
     }
-
-    @GetMapping("/article")
-    public Article getArticle() {
-        return new Article(1L, "Spring Intro", "Spring Boot project demo. Spring is backend friendly.", Set.of("Spring", "Boot"));
-    }
-
 }
