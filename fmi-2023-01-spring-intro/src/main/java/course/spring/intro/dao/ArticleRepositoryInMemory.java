@@ -1,24 +1,31 @@
-package course.spring.intro.dom;
+package course.spring.intro.dao;
 
 import course.spring.intro.model.Article;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class RepositoryArticleInMemory {
+public class ArticleRepositoryInMemory {
     AtomicLong nextId = new AtomicLong();
+    private final ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
 
+    @PostConstruct
+    public void init() {
+        create(new Article(1L, "Spring Intro", "Spring is developer friendly web service platform", "T. Iliev"));
+    }
 
-    private ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
+    public ArticleRepositoryInMemory() {
+        this(List.of(new Article(1L, "Spring Intro", "Spring is developer friendly web service platform", "T. Iliev")));
+    }
 
-    public RepositoryArticleInMemory() {
-        this(List.of(new Article(1L, "First", "Test", "Ivan Petrov", Collections.emptySet())));
+    public ArticleRepositoryInMemory(List<Article> initialArticles) {
+        initialArticles.forEach(art -> articles.put(art.getId(), art));
     }
 
     public List<Article> findAll() {
@@ -33,9 +40,5 @@ public class RepositoryArticleInMemory {
         article.setId(nextId.incrementAndGet());
         articles.put(article.getId(), article);
         return article;
-    }
-
-    public RepositoryArticleInMemory(List<Article> initialArticles) {
-        initialArticles.forEach(art -> articles.put(art.getId(), art));
     }
 }
