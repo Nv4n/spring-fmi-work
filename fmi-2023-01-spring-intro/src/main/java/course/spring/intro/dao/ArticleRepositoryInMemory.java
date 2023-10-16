@@ -2,6 +2,7 @@ package course.spring.intro.dao;
 
 import course.spring.intro.model.Article;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -13,20 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class ArticleRepositoryInMemory {
     AtomicLong nextId = new AtomicLong();
-    private final ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
-
-    @PostConstruct
-    public void init() {
-        create(new Article(1L, "Spring Intro", "Spring is developer friendly web service platform", "T. Iliev"));
-    }
-
-    public ArticleRepositoryInMemory() {
-        this(List.of(new Article(1L, "Spring Intro", "Spring is developer friendly web service platform", "T. Iliev")));
-    }
-
-    public ArticleRepositoryInMemory(List<Article> initialArticles) {
-        initialArticles.forEach(art -> articles.put(art.getId(), art));
-    }
+    private ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
 
     public List<Article> findAll() {
         return new ArrayList<>(articles.values());

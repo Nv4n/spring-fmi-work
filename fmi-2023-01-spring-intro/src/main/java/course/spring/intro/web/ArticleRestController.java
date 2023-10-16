@@ -18,9 +18,10 @@ public class ArticleRestController {
     public List<Article> getArticles() {
         return articleRepository.findAll();
     }
-    
+
     @PostMapping
     public Article createArticle(@RequestBody Article article) {
         return articleRepository.create(article);
     }
+
 }
