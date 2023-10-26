@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class ArticleRepositoryInMemory {
     AtomicLong nextId = new AtomicLong();
-    private ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, Article> articles = new ConcurrentHashMap<>();
 
     public List<Article> findAll() {
         return new ArrayList<>(articles.values());
