@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Bank')}">
+</head>
+<body>
+<form th:object="${user}" method="POST">
+    <div class="relative">
+        <input th:field="*{username}" th:errorclass="field-error" type="text"
+               id="hs-floating-input-username"
+               class="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600
+  focus:pt-6
+  focus:pb-2
+  [&:not(:placeholder-shown)]:pt-6
+  [&:not(:placeholder-shown)]:pb-2
+  autofill:pt-6
+  autofill:pb-2" placeholder="user">
+        <label for="hs-floating-input-username" class="absolute top-0 start-0 p-4 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent dark:text-white peer-disabled:opacity-50 peer-disabled:pointer-events-none
+    peer-focus:text-xs
+    peer-focus:-translate-y-1.5
+    peer-focus:text-gray-500
+    peer-[:not(:placeholder-shown)]:text-xs
+    peer-[:not(:placeholder-shown)]:-translate-y-1.5
+    peer-[:not(:placeholder-shown)]:text-gray-500">Username</label>
+        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" id="dismiss-alert"
+             class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-teal-50 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+             role="alert">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-4 w-4 text-blue-600 mt-1" width="24"
+                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                        <path d="M10 10l4 4m0 -4l-4 4"/>
+                    </svg>
+                </div>
+                <div class="ms-2">
+                    <div class="text-sm font-medium" th:errors="*{username}">
+                        Username is required.
+                    </div>
+                </div>
+                <div class="ps-3 ms-auto">
+                    <div class="-mx-1.5 -my-1.5">
+                        <button type="button"
+                                class="inline-flex bg-teal-50 rounded-lg p-1.5 text-teal-500 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-teal-50 focus:ring-teal-600 dark:bg-transparent dark:hover:bg-teal-800/50 dark:text-teal-600"
+                                data-hs-remove-element="#dismiss-alert">
+                            <span class="sr-only">Dismiss</span>
+                            <svg class="flex-shrink-0 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6 6 18"/>
+                                <path d="m6 6 12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="relative">
+        <input th:field="*{passwordHash}" th:errorclass="field-error" type="password"
+               id="hs-floating-input-password"
+               class="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600
+  focus:pt-6
+  focus:pb-2
+  [&:not(:placeholder-shown)]:pt-6
+  [&:not(:placeholder-shown)]:pb-2
+  autofill:pt-6
+  autofill:pb-2" placeholder="password">
+        <label for="hs-floating-input-password" class="absolute top-0 start-0 p-4 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent dark:text-white peer-disabled:opacity-50 peer-disabled:pointer-events-none
+    peer-focus:text-xs
+    peer-focus:-translate-y-1.5
+    peer-focus:text-gray-500
+    peer-[:not(:placeholder-shown)]:text-xs
+    peer-[:not(:placeholder-shown)]:-translate-y-1.5
+    peer-[:not(:placeholder-shown)]:text-gray-500">Password</label>
+        <div th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}" id="dismiss-pass-alert"
+             class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-teal-50 border border-teal-200 text-sm text-teal-800 rounded-lg p-4 dark:bg-teal-800/10 dark:border-teal-900 dark:text-teal-500"
+             role="alert">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-4 w-4 text-blue-600 mt-1" width="24"
+                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                        <path d="M10 10l4 4m0 -4l-4 4"/>
+                    </svg>
+                </div>
+                <div class="ms-2">
+                    <div class="text-sm font-medium" th:errors="*{passwordHash}">
+                        Password is required.
+                    </div>
+                </div>
+                <div class="ps-3 ms-auto">
+                    <div class="-mx-1.5 -my-1.5">
+                        <button type="button"
+                                class="inline-flex bg-teal-50 rounded-lg p-1.5 text-teal-500 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-teal-50 focus:ring-teal-600 dark:bg-transparent dark:hover:bg-teal-800/50 dark:text-teal-600"
+                                data-hs-remove-element="#dismiss-pass-alert">
+                            <span class="sr-only">Dismiss Password</span>
+                            <svg class="flex-shrink-0 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6 6 18"/>
+                                <path d="m6 6 12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+</html>

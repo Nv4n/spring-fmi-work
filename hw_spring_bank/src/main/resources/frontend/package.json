@@ -1,0 +1,21 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "tcss": "tailwindcss -i ./index.css -o ../static/css/index.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "dependencies": {
+    "@preline/remove-element": "^2.0.1",
+    "preline": "^2.0.2"
+  },
+  "packageManager": "yarn@3.6.4"
+}
