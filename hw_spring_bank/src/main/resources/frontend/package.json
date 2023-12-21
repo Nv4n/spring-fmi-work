@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@preline/remove-element": "^2.0.1",
+    "@preline/tabs": "^2.0.1",
     "preline": "^2.0.2"
   },
   "packageManager": "yarn@3.6.4"

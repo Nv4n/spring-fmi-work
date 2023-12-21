@@ -40,13 +40,11 @@ public class User {
     @ToString.Exclude
     private List<BankAccount> accounts = new ArrayList<>();
 
-    @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
 
-    @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Temporal(TemporalType.TIMESTAMP)

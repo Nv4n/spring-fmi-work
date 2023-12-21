@@ -6,13 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "bankacounts")
+@Table(name = "bankacounts", uniqueConstraints = @UniqueConstraint(name = "UC_NicknameUser", columnNames = {"nickname", "owner_id"}))
 public class BankAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,14 +27,20 @@ public class BankAccount {
     private UUID id;
 
     @NotNull
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
     private String iban = Iban.random(CountryCode.BG).toString();
 
     @NotNull
-    @PositiveOrZero
-    private Double balance;
+    @Size(min = 3, max = 20)
+    @Column(nullable = false, length = 40)
+    private String nickname;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @NotNull
+    @PositiveOrZero
+    private Double balance = 0.0;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
     @ToString.Exclude
     @JsonIgnore
     private User owner;
@@ -43,11 +48,6 @@ public class BankAccount {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Transient
     private UUID ownerId;
-
-    @OneToMany(mappedBy = "account")
-    @ToString.Exclude
-    @JsonIgnore
-    private List<Transaction> trasactions = new ArrayList<>();
 
     @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")

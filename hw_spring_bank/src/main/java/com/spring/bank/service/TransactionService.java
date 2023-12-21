@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface TransactionService {
     Collection<Transaction> getTransactions();
 
+    Collection<Transaction> getTransactionsByAccountIdWithLimit(UUID id, int limit);
+
     Transaction getTransactionById(UUID id);
 
     Transaction createTransaction(Transaction transaction);

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.util.Date;
@@ -26,13 +26,10 @@ public class Transaction {
     private UUID id;
 
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be non-zero")
+    @Positive
     @Max(10000)
     private Double amount;
-
-    @NotNull
-    private TransactionType type;
-
+    
     @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,9 +39,18 @@ public class Transaction {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @ToString.Exclude
     @JsonIgnore
-    private BankAccount account;
+    private BankAccount sender;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Transient
-    private UUID accountId;
+    private UUID senderId;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ToString.Exclude
+    @JsonIgnore
+    private BankAccount receiver;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Transient
+    private UUID receiverId;
 }

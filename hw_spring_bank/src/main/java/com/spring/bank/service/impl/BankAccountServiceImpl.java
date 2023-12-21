@@ -1,10 +1,13 @@
 package com.spring.bank.service.impl;
 
 import com.spring.bank.dao.BankAccountRepository;
+import com.spring.bank.dao.UserRepository;
 import com.spring.bank.exception.EntityNotFoundException;
 import com.spring.bank.exception.InvalidEntityException;
 import com.spring.bank.model.BankAccount;
+import com.spring.bank.model.User;
 import com.spring.bank.service.BankAccountService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +24,18 @@ import java.util.stream.Collectors;
 public class BankAccountServiceImpl implements BankAccountService {
     @Autowired
     private BankAccountRepository accountRepo;
+    @Autowired
+    private UserRepository userRepo;
 
 
     @Override
     public Collection<BankAccount> getBankAccounts() {
         return accountRepo.findAll();
+    }
+
+    @Override
+    public Collection<BankAccount> getBankAccountsByOwnerId(UUID id) {
+        return accountRepo.findAllByOwnerId(id);
     }
 
     @Override
@@ -44,11 +54,18 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
-    public BankAccount createBankAccount(BankAccount bankAccount) {
-        accountRepo.findById(bankAccount.getId()).ifPresent(ba -> {
-            throw new InvalidEntityException(
-                    String.format("Bank Account with ID{ %s } already exist.", bankAccount.getId()));
-        });
+    public BankAccount createBankAccount(@Valid BankAccount bankAccount) {
+        UUID ownerId;
+        if (bankAccount.getOwner() != null && bankAccount.getOwner().getId() != null) {
+            ownerId = bankAccount.getOwner().getId();
+        } else {
+            ownerId = bankAccount.getOwnerId();
+        }
+        if (ownerId != null) {
+            User owner = userRepo.findById(ownerId)
+                    .orElseThrow(() -> new InvalidEntityException("User with ID=" + ownerId + " does not exist."));
+            bankAccount.setOwner(owner);
+        }
         bankAccount.setCreatedAt(new Date());
         bankAccount.setModifiedAt(new Date());
         return accountRepo.save(bankAccount);
@@ -57,10 +74,15 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     @Transactional
     public BankAccount updateBankAccount(BankAccount bankAccount) {
+        bankAccount.setModifiedAt(new Date());
         BankAccount old = getBankAccountById(bankAccount.getId());
+        if (old == null) {
+            throw new EntityNotFoundException(String.format("Bank Account with ID=%s not found.", bankAccount.getId()));
+        }
         if (!old.getIban().equals(bankAccount.getIban())) {
             throw new InvalidEntityException("IBAN of bank account couldn't be changed.");
         }
+        bankAccount.setOwner(old.getOwner());
         return null;
     }
 

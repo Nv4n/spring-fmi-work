@@ -138,6 +138,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@preline/tabs@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@preline/tabs@npm:2.0.1"
+  checksum: c5014d8f64f005022ad889c5f9dc9c16109f481d56525e4e8900ed5da0270bcea08bc7c643cefd030a058cd52747ebaa3edf9f8dfb65820cea928e14a715ad45
+  languageName: node
+  linkType: hard
+
 "@tailwindcss/forms@npm:^0.5.7":
   version: 0.5.7
   resolution: "@tailwindcss/forms@npm:0.5.7"
@@ -564,6 +571,7 @@ __metadata:
   resolution: "frontend@workspace:."
   dependencies:
     "@preline/remove-element": ^2.0.1
+    "@preline/tabs": ^2.0.1
     "@tailwindcss/forms": ^0.5.7
     autoprefixer: ^10.4.16
     postcss: ^8.4.32

@@ -7,6 +7,7 @@ import com.spring.bank.model.Transaction;
 import com.spring.bank.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Collection<Transaction> getTransactions() {
-        return transactionRepo.findAll();
+        return transactionRepo.findAll(Sort.by("transactionDate"));
+    }
+
+    @Override
+    public Collection<Transaction> getTransactionsByAccountIdWithLimit(UUID id, int limit) {
+        return transactionRepo.findAllByAccountIdWithLimit(id, limit);
     }
 
     @Override

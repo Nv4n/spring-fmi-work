@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Bank-Register')}">
+<head th:replace="~{fragments/head :: head('Bank-Login')}">
 </head>
 <body>
 <div class="border-b-2 border-gray-200 dark:border-gray-700">
     <div class="-mb-0.5 flex justify-center space-x-6">
-        <a class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
-           href="/login">
+        <a class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-blue-500 text-sm font-medium whitespace-nowrap text-blue-600 focus:outline-none focus:text-blue-800"
+           aria-current="page" href="/login">
             Login
         </a>
 
-        <a class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-blue-500 text-sm font-medium whitespace-nowrap text-blue-600 focus:outline-none focus:text-blue-800"
-           aria-current="page" href="/register">
+        <a class="py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600"
+           href="/register">
             Register
         </a>
     </div>
 </div>
-<form class="grid place-items-center gap-2 p-3" th:object="${user}" method="POST">
+<form class="grid place-items-center gap-2 m-3" method="POST">
     <div class="relative">
-        <input th:field="*{username}" th:errorclass="field-error" type="text"
+        <input th:value="${username}" type="text"
                name="username"
                min="5"
                max="20"
@@ -39,47 +39,10 @@
     peer-[:not(:placeholder-shown)]:text-gray-500">Username</label>
 
     </div>
-    <div th:if="${#fields.hasErrors('username')}" id="dismiss-alert"
-         class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500"
-         role="alert" data-dismiss-alert>
-        <div class="flex">
-            <div class="flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-4 w-4 mt-0.5" width="24"
-                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
-                    <path d="M10 10l4 4m0 -4l-4 4"/>
-                </svg>
-            </div>
-            <div class="ms-2">
-                <div class="text-sm font-medium" th:errors="*{username}">
-                    Username is required.
-                </div>
-            </div>
-            <div class="ps-3 ms-auto">
-                <div class="-mx-1.5 -my-1.5">
-                    <button type="button"
-                            class="inline-flex bg-red-50 rounded-lg p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600 dark:bg-transparent dark:hover:bg-red-800/50 dark:text-red-600"
-                            data-hs-remove-element="#dismiss-alert">
-                        <span class="sr-only">Dismiss</span>
-                        <svg class="flex-shrink-0 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 6 6 18"/>
-                            <path d="m6 6 12 12"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="relative">
-        <input th:field="*{passwordHash}" th:errorclass="field-error" type="password"
-               id="hs-floating-input-password"
+        <input th:value="${password}" min="8" max="32" type="password"
                name="password"
-               min="8"
-               max="32"
+               id="hs-floating-input-password"
                class="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600
   focus:pt-6
   focus:pb-2
@@ -96,7 +59,8 @@
     peer-[:not(:placeholder-shown)]:text-gray-500">Password</label>
 
     </div>
-    <div th:if="${#fields.hasErrors('passwordHash')}" id="dismiss-pass-alert"
+    <!--/*@thymesVar id="errors" type="String"*/-->
+    <div th:if="${errors}" id="dismiss-pass-alert"
          class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500"
          role="alert" data-dismiss-alert>
         <div class="flex">
@@ -110,8 +74,8 @@
                 </svg>
             </div>
             <div class="ms-2">
-                <div class="text-sm font-medium" th:errors="*{passwordHash}">
-                    Password is required.
+                <div class="text-sm font-medium" th:text="${errors}">
+                    Invalid username or password.
                 </div>
             </div>
             <div class="ps-3 ms-auto">
@@ -133,7 +97,7 @@
     </div>
     <button type="submit"
             class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-        Register
+        Login
         <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-4 h-4" width="24" height="24"
              viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
              stroke-linejoin="round">

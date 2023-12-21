@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface BankAccountService {
     Collection<BankAccount> getBankAccounts();
 
+    Collection<BankAccount> getBankAccountsByOwnerId(UUID id);
+
     BankAccount getBankAccountById(UUID id);
 
     BankAccount getBankAccountByIBAN(String id);
