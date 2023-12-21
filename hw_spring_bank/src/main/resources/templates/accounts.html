@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head('Bank')}">
 </head>
 <body>
+<header th:replace="~{fragments/menu}"></header>
 <div th:if="${!accounts.isEmpty()}" class="flex flex-wrap">
     <div class="border-e border-gray-200 dark:border-gray-700">
         <nav class="flex flex-col space-y-2" aria-label="Tabs" role="tablist" data-hs-tabs-vertical="true">
@@ -16,6 +17,27 @@
             </button>
         </nav>
     </div>
+
+    <form class="grid place-items-center gap-2 p-3" th:action="@{/accounts}" method="post">
+        <label for="hs-select-label" class="block text-sm font-medium mb-2 dark:text-white">Transactions to show</label>
+        <select id="hs-select-label"
+                class="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600">
+            <option th:each="option,iterStat: ${limitOptions}" th:value="${option}" th:text="${option}"
+                    th:selected="${option eq param.limit}"></option>
+        </select>
+
+        <button type="submit"><span class="sr-only">Set transaction count</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-4 h-4" width="24"
+                 height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/>
+                <path d="M12 18c-.328 0 -.652 -.017 -.97 -.05c-3.172 -.332 -5.85 -2.315 -8.03 -5.95c2.4 -4 5.4 -6 9 -6c3.465 0 6.374 1.853 8.727 5.558"/>
+                <path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
+                <path d="M20.2 20.2l1.8 1.8"/>
+            </svg>
+        </button>
+    </form>
 
     <div class="ms-3">
         <div th:each="trans,iterStat: ${transactions}" th:id="${#strings.concat('vtab-ba-trans-',trans.key)}"

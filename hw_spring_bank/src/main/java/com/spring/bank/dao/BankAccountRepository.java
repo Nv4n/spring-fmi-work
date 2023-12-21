@@ -14,7 +14,9 @@ import java.util.UUID;
 public interface BankAccountRepository extends JpaRepository<BankAccount, UUID> {
     Optional<BankAccount> findByIban(String iban);
 
-    @Query(value = "SELECT * FROM bankacounts ba WHERE owner_id = :ownerId", nativeQuery = true)
+    @Query(value = "SELECT ba FROM BankAccount ba WHERE ba.owner.id = :ownerId")
     List<BankAccount> findAllByOwnerId(@Param("ownerId") UUID uuid);
 
+    @Query(value = "SELECT ba FROM BankAccount ba JOIN User us ON ba.owner.id = us.id WHERE us.username= :username")
+    List<BankAccount> findAllByOwnerUsername(@Param("username") String ownerUsername);
 }

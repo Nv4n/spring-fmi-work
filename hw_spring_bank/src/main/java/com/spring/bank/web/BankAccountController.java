@@ -17,10 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -37,9 +34,16 @@ public class BankAccountController {
     }
 
     @GetMapping
-    public String getAccounts(Model accounts, @RequestParam(value = "limit", defaultValue = "10") String limit) {
-        Collection<BankAccount> bankAccounts = accountService.getBankAccounts();
+    public String getAccounts(Model accounts, @RequestParam(value = "limit", defaultValue = "10") String limit, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Collection<BankAccount> bankAccounts = accountService.getBankAccountsByOwnerId(user.getId());
         accounts.addAttribute("accounts", bankAccounts);
+        List<String> options = new ArrayList<>();
+        options.add("10");
+        options.add("20");
+        options.add("50");
+        accounts.addAttribute("limitOptions", options);
+
         Map<String, Collection<Transaction>> transactionsByAccount = new TreeMap<>();
 
         int limitNumber = 10;
@@ -47,6 +51,7 @@ public class BankAccountController {
             limitNumber = Integer.parseInt(limit);
         } catch (NumberFormatException ignored) {
         }
+        log.info(String.format("Account Limit: %s", limit));
         for (BankAccount ba : bankAccounts) {
             Collection<Transaction> transactions = transactionService.getTransactionsByAccountIdWithLimit(ba.getId(), limitNumber);
             transactionsByAccount.put(ba.getId().toString(), transactions);

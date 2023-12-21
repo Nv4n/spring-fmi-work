@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@preline/remove-element": "^2.0.1",
+    "@preline/select": "^2.0.1",
     "@preline/tabs": "^2.0.1",
     "preline": "^2.0.2"
   },
