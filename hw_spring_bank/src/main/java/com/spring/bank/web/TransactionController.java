@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -50,6 +48,14 @@ public class TransactionController {
             }
             transaction.addAttribute("fromAccounts", bankAccounts);
         }
+        if (!transaction.containsAttribute("toAccounts")) {
+            Collection<BankAccount> toAccounts = new ArrayList<>();
+            transaction.addAttribute("toAccounts", toAccounts);
+        }
+        if (!transaction.containsAttribute("usernameToAccounts")) {
+            transaction.addAttribute("usernameToAccounts", "");
+        }
+
         return "add-transaction";
     }
 
@@ -79,5 +85,31 @@ public class TransactionController {
         }
 
         return "redirect:/";
+    }
+
+    @PostMapping("/add/process")
+    public String processAvailableAccounts(@ModelAttribute("transaction") Transaction transaction, @RequestParam("usernameToAccounts") String usernameToAccounts, RedirectAttributes redirectAttributes) {
+        if (usernameToAccounts.isBlank()) {
+            redirectAttributes.addFlashAttribute("transaction", transaction);
+            redirectAttributes.addFlashAttribute("usernameToAccounts", "");
+            redirectAttributes.addFlashAttribute("errorMessages", "Transferring to no user is not allowed");
+            redirectAttributes.addFlashAttribute("toAccounts", new ArrayList<BankAccount>());
+            return "redirect:add";
+        }
+
+        Collection<BankAccount> toAccounts = accountService.getBankAccountsByOwnerUsername(usernameToAccounts);
+        if (toAccounts.isEmpty()) {
+            redirectAttributes.addFlashAttribute("transaction", transaction);
+            redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
+            redirectAttributes.addFlashAttribute("errorMessages", "No bank accounts were found");
+            redirectAttributes.addFlashAttribute("toAccounts", new ArrayList<BankAccount>());
+            return "redirect:add";
+        }
+
+        redirectAttributes.addFlashAttribute("transaction", transaction);
+        redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
+        redirectAttributes.addFlashAttribute("errorMessages", "No bank accounts were found");
+        redirectAttributes.addFlashAttribute("toAccounts", toAccounts);
+        return "redirect:add";
     }
 }

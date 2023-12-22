@@ -39,6 +39,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
+    public Collection<BankAccount> getBankAccountsByOwnerUsername(String ownerUsername) {
+        return accountRepo.findAllByOwnerUsername(ownerUsername);
+    }
+
+    @Override
     public BankAccount getBankAccountById(UUID id) {
         return accountRepo.findById(id).orElseThrow(() ->
                 new EntityNotFoundException(

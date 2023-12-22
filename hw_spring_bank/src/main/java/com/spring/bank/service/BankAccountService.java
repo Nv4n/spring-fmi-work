@@ -11,6 +11,8 @@ public interface BankAccountService {
 
     Collection<BankAccount> getBankAccountsByOwnerId(UUID id);
 
+    Collection<BankAccount> getBankAccountsByOwnerUsername(String ownerUsername);
+
     BankAccount getBankAccountById(UUID id);
 
     BankAccount getBankAccountByIBAN(String id);

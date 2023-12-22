@@ -17,6 +17,6 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, UUID> 
     @Query(value = "SELECT ba FROM BankAccount ba WHERE ba.owner.id = :ownerId")
     List<BankAccount> findAllByOwnerId(@Param("ownerId") UUID uuid);
 
-    @Query(value = "SELECT ba FROM BankAccount ba JOIN User us ON ba.owner.id = us.id WHERE us.username= :username")
+    @Query(value = "SELECT ba FROM BankAccount ba JOIN User us ON ba.owner.id = us.id WHERE us.username LIKE %:username%")
     List<BankAccount> findAllByOwnerUsername(@Param("username") String ownerUsername);
 }
