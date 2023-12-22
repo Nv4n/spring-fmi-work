@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -33,7 +36,6 @@ public class TransactionController {
         this.transactionService = transactionService;
         this.accountService = accountService;
     }
-
 
     @GetMapping("/add")
     public String getAddAccountForm(Model transaction, HttpSession session) {
@@ -60,17 +62,18 @@ public class TransactionController {
     }
 
     @PostMapping("/add")
-    public String createNewAccount(@Valid @ModelAttribute("transaction") Transaction transaction, final BindingResult binding, RedirectAttributes redirectAttributes) {
+    public String createNewAccount(@Valid @ModelAttribute("transaction") Transaction transaction,
+                                   @ModelAttribute("usernameToAccounts") String usernameToAccounts,
+                                   @ModelAttribute("toAccounts") Collection<BankAccount> toAccounts,
+                                   final BindingResult binding, RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             List<String> errorMessages = binding.getAllErrors().stream().map(err -> {
                 ConstraintViolation cv = err.unwrap(ConstraintViolation.class);
                 return String.format("Err in '%s - invalid value: '%s'", cv.getPropertyPath(), cv.getInvalidValue());
             }).toList();
             log.error("Error creating account: {}", errorMessages);
-            redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
-            redirectAttributes.addFlashAttribute("transaction", transaction);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.transaction", binding);
-            return "redirect:add";
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts, binding,
+                    redirectAttributes, errorMessages.toString(), "add");
         }
 
         try {
@@ -78,23 +81,33 @@ public class TransactionController {
             transactionService.createTransaction(transaction);
         } catch (Exception ex) {
             log.error("Error creating account", ex);
-            redirectAttributes.addFlashAttribute("errorMessages", "Server error please try again...");
-            redirectAttributes.addFlashAttribute("transaction", transaction);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.transaction", binding);
-            return "redirect:add";
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts, binding,
+                    redirectAttributes, "Server error please try again...", "add");
         }
 
         return "redirect:/";
     }
 
+    private static String redirectInvalidTransaction(Transaction transaction, String usernameToAccounts, Collection<BankAccount> toAccounts,
+                                                     BindingResult binding, RedirectAttributes redirectAttributes, String errorMessages, String redirect) {
+        redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
+        redirectAttributes.addFlashAttribute("transaction", transaction);
+        redirectAttributes.addFlashAttribute("toAccounts", toAccounts);
+        redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
+        redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.transaction", binding);
+        return "redirect:" + redirect;
+    }
+
     @PostMapping("/add/process")
-    public String processAvailableAccounts(@ModelAttribute("transaction") Transaction transaction, @RequestParam("usernameToAccounts") String usernameToAccounts, RedirectAttributes redirectAttributes) {
+    public String processAvailableAccounts(@ModelAttribute("transaction") Transaction transaction, @ModelAttribute("usernameToAccounts") String usernameToAccounts, RedirectAttributes redirectAttributes) {
+        log.info(usernameToAccounts);
+        log.info(transaction.toString());
         if (usernameToAccounts.isBlank()) {
             redirectAttributes.addFlashAttribute("transaction", transaction);
             redirectAttributes.addFlashAttribute("usernameToAccounts", "");
             redirectAttributes.addFlashAttribute("errorMessages", "Transferring to no user is not allowed");
             redirectAttributes.addFlashAttribute("toAccounts", new ArrayList<BankAccount>());
-            return "redirect:add";
+            return "redirect:/transactions/add";
         }
 
         Collection<BankAccount> toAccounts = accountService.getBankAccountsByOwnerUsername(usernameToAccounts);
@@ -103,13 +116,14 @@ public class TransactionController {
             redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
             redirectAttributes.addFlashAttribute("errorMessages", "No bank accounts were found");
             redirectAttributes.addFlashAttribute("toAccounts", new ArrayList<BankAccount>());
-            return "redirect:add";
+            return "redirect:/transactions/add";
         }
 
         redirectAttributes.addFlashAttribute("transaction", transaction);
         redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
-        redirectAttributes.addFlashAttribute("errorMessages", "No bank accounts were found");
+        redirectAttributes.addFlashAttribute("errorMessages", null);
         redirectAttributes.addFlashAttribute("toAccounts", toAccounts);
-        return "redirect:add";
+        log.info(String.format("ACCOUNTS: %s", toAccounts));
+        return "redirect:/transactions/add";
     }
 }

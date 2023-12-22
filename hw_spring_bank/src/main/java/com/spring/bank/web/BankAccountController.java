@@ -43,6 +43,7 @@ public class BankAccountController {
         options.add("20");
         options.add("50");
         accounts.addAttribute("limitOptions", options);
+        accounts.addAttribute("limit", limit);
 
         Map<String, Collection<Transaction>> transactionsByAccount = new TreeMap<>();
 
@@ -85,7 +86,6 @@ public class BankAccountController {
 
         try {
             account.setOwner((User) session.getAttribute("user"));
-            account.setBalance(0.0);
             log.info("POST Account: " + account);
             accountService.createBankAccount(account);
         } catch (Exception ex) {

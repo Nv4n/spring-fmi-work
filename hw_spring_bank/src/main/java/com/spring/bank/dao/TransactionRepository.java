@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    @Query(value = "SELECT * FROM TRANSACTIONS t WHERE t.sender_id = :id or t.receiver_id = :id ORDER BY t.transaction_date DESC FETCH FIRST :limit ROWS ONLY"
+    @Query(value = "SELECT * FROM TRANSACTIONS t WHERE t.sender_id = :id or t.receiver_id = :id ORDER BY t.created_at DESC FETCH FIRST :limit ROWS ONLY"
             , nativeQuery = true)
     List<Transaction> findAllByAccountIdWithLimit(@Param("id") UUID id, @Param("limit") int limit);
 }

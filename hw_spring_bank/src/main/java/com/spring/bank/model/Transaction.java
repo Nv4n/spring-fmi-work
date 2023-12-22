@@ -29,12 +29,12 @@ public class Transaction {
     @Positive
     @Max(10000)
     private Double amount;
-    
+
     @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date transactionDate = new Date();
+    private Date createdAt = new Date();
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @ToString.Exclude

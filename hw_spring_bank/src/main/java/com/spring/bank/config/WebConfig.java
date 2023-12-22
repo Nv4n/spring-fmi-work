@@ -30,6 +30,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new RequestHasUserInterceptor())
                 .addPathPatterns("/auth/login", "/auth/register");
         registry.addInterceptor(new RequestNoUserInterceptor())
-                .addPathPatterns("/accounts/**");
+                .addPathPatterns("/accounts/**", "/transactions/**");
     }
 }

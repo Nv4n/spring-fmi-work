@@ -10,7 +10,8 @@
 </div>
 <form class="grid place-items-center gap-2 p-3" th:action="@{/transactions/add/process}" method="post">
     <div class="relative">
-        <input th:field="${usernameToAccounts}" type="text"
+        <input type="text"
+               th:value="${usernameToAccounts}"
                name="usernameToAccounts"
                min="5"
                max="20"
@@ -44,13 +45,16 @@
     </button>
 </form>
 <form class="grid place-items-center gap-2 p-3" th:object="${transaction}" method="POST">
+    <label for="hs-select-from" class="block text-sm font-medium mb-2 dark:text-white">Sender</label>
+    <select id="hs-select-from" th:name="usernameToAccounts"
+            class="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600">
+        <option th:each="option,iterStat: ${fromAccounts}" th:value="${option}"
+                th:text="${#strings.concat(option.nickname,' : ',option.iban)}"
+                th:selected="${option eq transaction.sender}"></option>
+    </select>
     <div class="relative">
-        <p class="font-semibold py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
-           aria-disabled="true" th:text="${#strings.concat('IBAN: ',account.iban)}">IBAN</p>
-    </div>
-    <div class="relative">
-        <input th:field="*{nickname}" th:errorclass="field-error" type="text"
-               name="nickname"
+        <input th:field="*{amount}" type="text" pattern="^\d+(\.\d)?$"
+               name="amount"
                min="3"
                max="20"
                id="hs-floating-input-nickname"
@@ -67,9 +71,16 @@
     peer-focus:text-gray-500
     peer-[:not(:placeholder-shown)]:text-xs
     peer-[:not(:placeholder-shown)]:-translate-y-1.5
-    peer-[:not(:placeholder-shown)]:text-gray-500">Bank account nickname</label>
+    peer-[:not(:placeholder-shown)]:text-gray-500">Amount to transfer</label>
 
     </div>
+    <label for="hs-select-to" class="block text-sm font-medium mb-2 dark:text-white">Receiver</label>
+    <select id="hs-select-to"
+            class="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600">
+        <option th:each="option,iterStat: ${toAccounts}" th:value="${option}"
+                th:text="${#strings.concat(option.nickname,' : ',option.iban)}"
+                th:selected="${option eq transaction.receiver}"></option>
+    </select>
     <div th:if="${errorMessages}" id="dismiss-alert"
          class="hs-removing:translate-x-5 hs-removing:opacity-0 transition duration-300 bg-red-50 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500"
          role="alert" data-dismiss-alert>
@@ -85,7 +96,7 @@
             </div>
             <div class="ms-2">
                 <div class="text-sm font-medium" th:text="${errorMessages}">
-                    Nickname is required.
+                    ERRORS
                 </div>
             </div>
         </div>
