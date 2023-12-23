@@ -43,17 +43,20 @@
 
 
     <div class="ms-3">
-        <div th:each="trans,iterStat: ${transactions}" th:id="${#strings.concat('vtab-ba-trans-',trans.key)}"
+        <div th:each="currTransactionList,iterStat: ${transactions}"
+             th:id="${#strings.concat('vtab-ba-trans-',currTransactionList.key)}"
              role="tabpanel"
-             th:aria-labelledby="${#strings.concat('vtab-ba-',trans.key)}">
+             th:aria-labelledby="${#strings.concat('vtab-ba-',currTransactionList.key)}">
             <!-- Timeline -->
             <div>
                 <!-- Item -->
-                <div th:each="t,iterStat: ${trans.value}" class="flex gap-x-3">
+                <div th:each="t,iterStat: ${currTransactionList.value}"
+                     class="flex gap-x-3 relative group rounded-lg hover:bg-gray-100 dark:hover:bg-white/10">
                     <!-- Left Content -->
                     <div class="w-16 text-end">
                         <span class="text-xs text-gray-500 dark:text-gray-400"
-                              th:text="${t.getCreatedAt}">dd-mm-yyyy</span>
+                              th:text="${t.createdAt}">dd-mm-yyyy</span>
+                        <span></span>
                     </div>
                     <!-- End Left Content -->
 
@@ -68,7 +71,7 @@
                     <!-- Right Content -->
                     <div class="grow pt-0.5 pb-8">
                         <h3 class="flex gap-x-1.5 font-semibold text-gray-800 dark:text-white"
-                            th:text="${t.type.name()}">
+                            th:text="${t.sender.id.toString()==currTransactionList.key? 'EXPENSE' : 'INCOME'}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-4 h-4 mt-1"
                                  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                  fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -80,8 +83,11 @@
                             </svg>
                             Created "Preline in React" task
                         </h3>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400" th:text="${t.amount}">
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400"
+                           th:text="${#strings.concat(t.amount,' BGN')}">
                         </p>
+                        <span th:text="${#strings.concat('FROM: ',t.sender.iban ,', TO: ',t.receiver.iban)}"
+                              class="mt-1 -ms-1 p-1 inline-flex items-center gap-x-2 text-xs rounded-lg border border-transparent text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"> </span>
                     </div>
                     <!-- End Right Content -->
                 </div>

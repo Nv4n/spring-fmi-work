@@ -56,7 +56,11 @@ public class BankAccountController {
         for (BankAccount ba : bankAccounts) {
             Collection<Transaction> transactions = transactionService.getTransactionsByAccountIdWithLimit(ba.getId(), limitNumber);
             transactionsByAccount.put(ba.getId().toString(), transactions);
+            for (Transaction tr : transactions) {
+                log.info(tr.getSender().getId().toString());
+            }
         }
+        log.info(transactionsByAccount.toString());
         accounts.addAttribute("transactions", transactionsByAccount);
         return "accounts";
     }

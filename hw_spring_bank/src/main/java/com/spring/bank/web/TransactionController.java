@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -64,7 +65,7 @@ public class TransactionController {
     @PostMapping("/add")
     public String createNewAccount(@Valid @ModelAttribute("transaction") Transaction transaction,
                                    @ModelAttribute("usernameToAccounts") String usernameToAccounts,
-                                   @ModelAttribute("toAccounts") Collection<BankAccount> toAccounts,
+                                   @ModelAttribute("toAccounts") ArrayList<BankAccount> toAccounts,
                                    final BindingResult binding, RedirectAttributes redirectAttributes) {
         if (binding.hasErrors()) {
             List<String> errorMessages = binding.getAllErrors().stream().map(err -> {
@@ -72,30 +73,65 @@ public class TransactionController {
                 return String.format("Err in '%s - invalid value: '%s'", cv.getPropertyPath(), cv.getInvalidValue());
             }).toList();
             log.error("Error creating account: {}", errorMessages);
-            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts, binding,
-                    redirectAttributes, errorMessages.toString(), "add");
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, errorMessages.toString());
+        }
+        if (transaction.getReceiverId() == null) {
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Not existing receiver");
+        }
+        if (transaction.getSenderId() == null) {
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Not existing sender");
         }
 
+        if (transaction.getReceiverId().equals(transaction.getSenderId())) {
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Can't transfer from to same bank account");
+        }
+        BankAccount sender;
+        BankAccount receiver;
+        try {
+            sender = accountService.getBankAccountById(transaction.getSenderId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Can't find sender's bank account");
+        }
+        try {
+            receiver = accountService.getBankAccountById(transaction.getReceiverId());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Can't find receiver's bank account");
+        }
+        if (sender.getBalance() < transaction.getAmount()) {
+            log.error(String.format("Insufficient funds: %.2f", sender.getBalance()));
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Insufficient funds");
+        }
         try {
             log.info("POST Transaction: " + transaction);
+            transaction.setCreatedAt(new Date());
+            transaction.setSender(sender);
+            transaction.setReceiver(receiver);
             transactionService.createTransaction(transaction);
         } catch (Exception ex) {
             log.error("Error creating account", ex);
-            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts, binding,
-                    redirectAttributes, "Server error please try again...", "add");
+            return redirectInvalidTransaction(transaction, usernameToAccounts, toAccounts,
+                    redirectAttributes, "Server error please try again...");
         }
 
         return "redirect:/";
     }
 
     private static String redirectInvalidTransaction(Transaction transaction, String usernameToAccounts, Collection<BankAccount> toAccounts,
-                                                     BindingResult binding, RedirectAttributes redirectAttributes, String errorMessages, String redirect) {
+                                                     RedirectAttributes redirectAttributes, String errorMessages) {
         redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
         redirectAttributes.addFlashAttribute("transaction", transaction);
         redirectAttributes.addFlashAttribute("toAccounts", toAccounts);
         redirectAttributes.addFlashAttribute("usernameToAccounts", usernameToAccounts);
-        redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.transaction", binding);
-        return "redirect:" + redirect;
+        return "redirect:add";
     }
 
     @PostMapping("/add/process")

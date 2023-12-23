@@ -36,7 +36,7 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @ToString.Exclude
     @JsonIgnore
     private BankAccount sender;
@@ -45,7 +45,7 @@ public class Transaction {
     @Transient
     private UUID senderId;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @ToString.Exclude
     @JsonIgnore
     private BankAccount receiver;

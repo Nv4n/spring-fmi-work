@@ -1,10 +1,12 @@
 package com.spring.bank.service.impl;
 
+import com.spring.bank.dao.BankAccountRepository;
 import com.spring.bank.dao.TransactionRepository;
 import com.spring.bank.exception.EntityNotFoundException;
-import com.spring.bank.exception.InvalidEntityException;
+import com.spring.bank.model.BankAccount;
 import com.spring.bank.model.Transaction;
 import com.spring.bank.service.TransactionService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionRepository transactionRepo;
+    @Autowired
+    private BankAccountRepository accountRepo;
 
     @Override
     public Collection<Transaction> getTransactions() {
@@ -41,12 +46,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction createTransaction(Transaction transaction) {
-        transactionRepo.findById(transaction.getId()).ifPresent(t -> {
-            throw new InvalidEntityException(
-                    String.format("Transaction with ID{ %s } already exist.", transaction.getId())
-            );
-        });
+    public Transaction createTransaction(@Valid Transaction transaction) {
+        BankAccount sender = transaction.getSender();
+        BankAccount receiver = transaction.getReceiver();
+
+        sender.setBalance(sender.getBalance() - transaction.getAmount());
+        receiver.setBalance(receiver.getBalance() + transaction.getAmount());
+        accountRepo.save(sender);
+        accountRepo.save(receiver);
+        transaction.setCreatedAt(new Date());
+        
         return transactionRepo.save(transaction);
     }
 
